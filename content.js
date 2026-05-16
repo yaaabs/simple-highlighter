@@ -26,13 +26,22 @@ function isRangeUsable(range) {
   const container = range.commonAncestorContainer;
   if (!container) return false;
   if (container.nodeType === Node.DOCUMENT_NODE) return false;
-  return document.contains(container.nodeType === Node.ELEMENT_NODE ? container : container.parentElement);
+  return document.contains(
+    container.nodeType === Node.ELEMENT_NODE
+      ? container
+      : container.parentElement,
+  );
 }
 
 function getActiveOrLastRange() {
   const active = getSelectionRange();
   if (active && !isEditable(active.commonAncestorContainer)) return active;
-  if (lastUserRange && isRangeUsable(lastUserRange) && !isEditable(lastUserRange.commonAncestorContainer)) return lastUserRange;
+  if (
+    lastUserRange &&
+    isRangeUsable(lastUserRange) &&
+    !isEditable(lastUserRange.commonAncestorContainer)
+  )
+    return lastUserRange;
   return null;
 }
 
@@ -47,21 +56,20 @@ function getTextNodesInRange(range) {
     return [root];
   }
 
-  const walkerRoot = root?.nodeType === Node.ELEMENT_NODE ? root : root?.parentElement;
+  const walkerRoot =
+    root?.nodeType === Node.ELEMENT_NODE ? root : root?.parentElement;
   if (!walkerRoot) return [];
-  const walker = document.createTreeWalker(
-    walkerRoot,
-    NodeFilter.SHOW_TEXT,
-    {
-      acceptNode(node) {
-        if (!node || !node.nodeValue || node.nodeValue.trim().length === 0) return NodeFilter.FILTER_REJECT;
-        if (!range.intersectsNode(node)) return NodeFilter.FILTER_REJECT;
-        if (node.parentElement?.closest(`.${HIGHLIGHT_CLASS}`)) return NodeFilter.FILTER_REJECT;
-        if (isEditable(node)) return NodeFilter.FILTER_REJECT;
-        return NodeFilter.FILTER_ACCEPT;
-      },
-    }
-  );
+  const walker = document.createTreeWalker(walkerRoot, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      if (!node || !node.nodeValue || node.nodeValue.trim().length === 0)
+        return NodeFilter.FILTER_REJECT;
+      if (!range.intersectsNode(node)) return NodeFilter.FILTER_REJECT;
+      if (node.parentElement?.closest(`.${HIGHLIGHT_CLASS}`))
+        return NodeFilter.FILTER_REJECT;
+      if (isEditable(node)) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    },
+  });
 
   const nodes = [];
   let current = walker.nextNode();
@@ -102,10 +110,15 @@ function wrapTextNodePortion(node, startOffset, endOffset, color) {
 function highlightSelection(color) {
   const range = getActiveOrLastRange();
   if (!range) return { ok: false, message: "Select some text first." };
-  if (isEditable(range.commonAncestorContainer)) return { ok: false, message: "Highlighting is disabled in editable fields." };
+  if (isEditable(range.commonAncestorContainer))
+    return {
+      ok: false,
+      message: "Highlighting is disabled in editable fields.",
+    };
 
   const nodes = getTextNodesInRange(range);
-  if (nodes.length === 0) return { ok: false, message: "Nothing highlightable selected." };
+  if (nodes.length === 0)
+    return { ok: false, message: "Nothing highlightable selected." };
 
   let changed = 0;
   for (const node of nodes) {
@@ -136,10 +149,14 @@ function unwrapMark(markEl) {
 
 function eraseSelection() {
   const range = getActiveOrLastRange();
-  if (!range) return { ok: false, message: "Select highlighted text to erase." };
-  if (isEditable(range.commonAncestorContainer)) return { ok: false, message: "Erasing is disabled in editable fields." };
+  if (!range)
+    return { ok: false, message: "Select highlighted text to erase." };
+  if (isEditable(range.commonAncestorContainer))
+    return { ok: false, message: "Erasing is disabled in editable fields." };
 
-  const marks = Array.from(document.querySelectorAll(`.${HIGHLIGHT_CLASS}`)).filter((el) => {
+  const marks = Array.from(
+    document.querySelectorAll(`.${HIGHLIGHT_CLASS}`),
+  ).filter((el) => {
     try {
       return range.intersectsNode(el);
     } catch {
@@ -147,7 +164,8 @@ function eraseSelection() {
     }
   });
 
-  if (marks.length === 0) return { ok: false, message: "No highlights found in selection." };
+  if (marks.length === 0)
+    return { ok: false, message: "No highlights found in selection." };
   marks.forEach(unwrapMark);
   window.getSelection()?.removeAllRanges();
   return { ok: true, message: `Erased (${marks.length}).` };
@@ -155,7 +173,8 @@ function eraseSelection() {
 
 function clearAllHighlights() {
   const marks = Array.from(document.querySelectorAll(`.${HIGHLIGHT_CLASS}`));
-  if (marks.length === 0) return { ok: false, message: "No highlights on this page." };
+  if (marks.length === 0)
+    return { ok: false, message: "No highlights on this page." };
   marks.forEach(unwrapMark);
   return { ok: true, message: `Cleared (${marks.length}).` };
 }
@@ -189,12 +208,13 @@ document.addEventListener(
       if (!range) return;
       if (isEditable(range.commonAncestorContainer)) return;
       if (range.commonAncestorContainer?.nodeType === Node.ELEMENT_NODE) {
-        if (range.commonAncestorContainer.closest?.(`.${HIGHLIGHT_CLASS}`)) return;
+        if (range.commonAncestorContainer.closest?.(`.${HIGHLIGHT_CLASS}`))
+          return;
       }
       lastUserRange = range.cloneRange();
     } catch {
       // ignore
     }
   },
-  { passive: true }
+  { passive: true },
 );

@@ -66,7 +66,9 @@ document.querySelectorAll(".colorBtn").forEach((btn) => {
 
 document.getElementById("highlight").addEventListener("click", () => {
   const color = getActiveColor();
-  withActiveTab((tabId) => sendToContent(tabId, { action: "highlight", color }));
+  withActiveTab((tabId) =>
+    sendToContent(tabId, { action: "highlight", color }),
+  );
 });
 
 document.getElementById("erase").addEventListener("click", () => {
