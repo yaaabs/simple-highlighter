@@ -1,11 +1,16 @@
 {
   "manifest_version": 3,
   "name": "Simple Highlighter",
-  "version": "1.0",
-  "description": "Highlight, erase, and clear highlights on selected text",
-  "permissions": ["activeTab", "storage"],
+  "version": "1.1.1",
+  "description": "A lightweight text highlighter for webpages with colorful highlights, erase, clear, and right-click menu actions.",
+  "permissions": ["activeTab", "storage", "scripting", "contextMenus"],
+  "host_permissions": ["http://*/*", "https://*/*"],
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "src/html/popup.html",
+    "default_title": "Simple Highlighter"
+  },
+  "background": {
+    "service_worker": "src/js/background.js"
   },
   "icons": {
     "16": "icons/icon16.png",
@@ -15,8 +20,9 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["src/js/content.js"],
+      "run_at": "document_idle"
     }
   ]
 }
