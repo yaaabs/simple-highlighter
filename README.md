@@ -2,6 +2,8 @@
 
 Simple Highlighter is a lightweight Manifest V3 extension for Chromium-based browsers. It gives you a fast, focused way to mark selected text, remove highlights, and clear a page without clutter or setup friction.
 
+It is built for readers, students, researchers, and anyone who wants a clean way to emphasize text on webpages without breaking the page layout.
+
 ## Why It’s Useful
 
 If you read, research, compare, or review text online, this extension keeps the important parts visible in seconds. It is intentionally simple: pick a color, highlight the selection, erase when needed, or clear everything on the page.
@@ -110,3 +112,13 @@ No data is sent off-device.
 ## License
 
 This project is released under the MIT License. See [LICENSE](LICENSE).
+
+## Versioning And Releases
+
+This repository follows semantic versioning. The current version is `1.1.1`, which should stay aligned across:
+
+- `manifest.json`
+- Git tags such as `v1.1.1`
+- Microsoft Edge Add-ons releases
+
+When a future release is ready, bump the version in `manifest.json`, add a matching git tag, and publish the same version in the store release notes.

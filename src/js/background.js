@@ -10,13 +10,24 @@ const COLORS = {
 
 const WEB_DOCUMENT_PATTERNS = ["http://*/*", "https://*/*"];
 
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener((details) => {
   registerContextMenus();
+
+  if (details.reason === "update") {
+    openUpdatePage();
+  }
 });
 
 chrome.runtime.onStartup.addListener(() => {
   registerContextMenus();
 });
+
+function openUpdatePage() {
+  const version = chrome.runtime.getManifest().version;
+  chrome.tabs.create({
+    url: chrome.runtime.getURL(`src/html/update.html?version=${encodeURIComponent(version)}`),
+  });
+}
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (!tab?.id || isRestrictedUrl(tab.url)) return;
